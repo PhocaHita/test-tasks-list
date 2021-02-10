@@ -1,55 +1,30 @@
-<template lang="pug">
-.main-container
-    template(v-if="taskList.length")
-        .tasks-list(v-for="task in taskList")
-            .item
-                TaskItem(:item="task")
-
-    .tasks-menu
-        .task-actions
-            .button
-                .task-button.-add Add
-
+<template>
+  <div id="nav">
+    <router-link to="/">Home</router-link> |
+    <router-link to="/about">About</router-link>
+  </div>
+  <router-view/>
 </template>
 
-<script>
-import TaskItem from './components/TaskItem.vue'
+<style lang="scss">
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+}
 
-export default {
-  name: 'App',
-  components: {
-    TaskItem
-  },
-  data(){
-      return {
-          taskList: []
-      }
+#nav {
+  padding: 30px;
+
+  a {
+    font-weight: bold;
+    color: #2c3e50;
+
+    &.router-link-exact-active {
+      color: #42b983;
+    }
   }
 }
-</script>
-
-<style lang="scss">
-    .main-continer{
-        max-width: 1200px;
-        width: 100%;
-        margin: 0 auto;
-        padding: 50px 0;
-    }
-    .tasks-list{
-        display: flex;
-        flex-wrap: wrap;
-        margin: 0 -10px -20px;
-        & > .item{
-            flex-basis: 25%;
-            width: 100%;
-            padding: 0 10px;
-            margin-bottom: 20px;
-        }
-    }
-    .tasks-menu{
-        margin-top: 50px;
-        &:first-child{
-            margin-top: 0;
-        }
-    }
 </style>
