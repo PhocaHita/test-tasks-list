@@ -25,7 +25,7 @@
     .tasks-item{
         width: 100%;
         height: 100%;
-        border-radius: 50%;
+        border-radius: 50px;
         overflow: hidden;
         box-shadow: 0 5px 10px rgba(0,0,0, .5);
         & > .field{
@@ -36,6 +36,7 @@
     .task-actions{
         display: flex;
         align-items: center;
+        justify-content: center;
         margin: 0 -10px;
         & > .button{
             flex-basis: 50%;
@@ -50,24 +51,26 @@
         margin: 0 auto;
         text-align: center;
         border-radius: 50px;
-        padding: 5px;
+        padding: 10px 15px;
         font-weight: 500;
         cursor: pointer;
+        text-decoration: none;
+        color: white;
         transition: all .2s ease-in-out;
         &:hover{
             opacity: .8;
         }
         &.-change{
-            color: black;
-            background-color: darkgoldenrod;
+            background-color: sienna;
         }
         &.-delete{
-            color: white;
             background-color: maroon;
         }
         &.-add{
-            color: white;
             background-color: darkolivegreen;
+        }
+        &.-create{
+            background-color: forestgreen;
         }
     }
 </style>

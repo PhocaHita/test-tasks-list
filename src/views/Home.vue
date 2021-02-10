@@ -8,7 +8,7 @@
     .tasks-menu
         .task-actions
             .button
-                router-link.task-button.-add(to="/about") Add
+                router-link.task-button.-add(to="/add") Add
 </template>
 
 <script>
@@ -28,7 +28,7 @@
 </script>
 
 <style lang="scss">
-    .main-continer {
+    .main-container{
         max-width: 1200px;
         width: 100%;
         margin: 0 auto;
