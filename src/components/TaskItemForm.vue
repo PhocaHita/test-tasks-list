@@ -5,26 +5,35 @@
         input.field(:value="currentItem.id" disabled)
     .field.task-field
         .label {{staticText.name}}
-        input.field(:value="currentItem.name")
+        input.field(v-model="currentItem.name" :class="{'-red': fieldErrors.name}")
+        .error(v-if="fieldErrors.name") {{staticText.errors.name}}
     .field.task-field.-textarea
         .label {{staticText.description}}
         .field
-            textarea.task-textarea(:value="currentItem.description")
+            textarea.task-textarea(v-model="currentItem.description")
     .field.task-field.-select
         .label {{staticText.status}}
-        select.field
-            option(:selected="currentItem.status = 0") новая
-            option(:selected="currentItem.status = 1") в работе
-            option(:selected="currentItem.status = 2") выполнена
+        select.field(v-model="currentItem.status" :class="fieldColorModier || {'-red': fieldErrors.status}")
+            option(:selected="currentItem.status === 0" :value="0" disabled)
+            option(:selected="currentItem.status === 1" :value="1") {{staticText.statusOptions.new}}
+            option(:selected="currentItem.status === 2" :value="2") {{staticText.statusOptions.inProgress}}
+            option(:selected="currentItem.status === 3" :value="3") {{staticText.statusOptions.done}}
+        .error(v-if="fieldErrors.status") {{staticText.errors.status}}
     .field.task-field
         .label {{staticText.date}}
         input.field(:value="currentItem.date" disabled)
     .task-actions
-        .button
-            .task-button.-create(v-if="isAdd") {{staticText.create}}
-            .task-button.-change(v-else) {{staticText.change}}
-        .button
-            .task-button.-delete {{staticText.delete}}
+        template(v-if="isAdd")
+            .button
+                .task-button.-create(@click="checkComplite('add')") {{staticText.create}}
+            .button
+                router-link.task-button.-delete(to="/") {{staticText.cancel}}
+        template(v-else)
+            .button
+                .task-button.-change(@click="checkComplite('edit')") {{staticText.change}}
+
+            .button
+                .task-button.-delete(@click="deleteTask") {{staticText.delete}}
 </template>
 
 <script>
@@ -38,20 +47,40 @@
             return {
                 staticText: {
                     id: 'ID',
-                    name: 'Имя',
+                    name: 'Имя*',
                     description: 'Описание',
-                    status: 'Статус',
+                    status: 'Статус*',
                     date: 'Дата',
                     change: 'Изменить',
                     create: 'Создать',
                     delete: 'Удалить',
+                    cancel: 'Отмена',
+                    errors: {
+                        name: 'Необходимо именовать задачу',
+                        status: 'Необходимо выбрать статус задачи'
+                    },
+                    statusOptions: {
+                        new: 'Новая',
+                        inProgress: 'В работе',
+                        done: 'Выполнена',
+                    }
+                },
+                fieldErrors: {
+                    name: false,
+                    status: false
                 },
                 currentItem: {},
+                fieldColorModier: null
+            }
+        },
+        watch: {
+            'currentItem.status': function(newStatusId) {
+               this.setSelectColor(newStatusId);
             }
         },
         methods: {
             checkCurrentItem(){
-                this.currentItem.id = this.item.id ? this.item.id : 1;
+                this.currentItem.id = this.item.id ? this.item.id : this.checkLastID() + 1;
                 this.currentItem.name = this.item.name ? this.item.name : '';
                 this.currentItem.description = this.item.description ? this.item.description : '';
                 this.currentItem.status = this.item.status ? this.item.status : 0;
@@ -59,6 +88,50 @@
             },
             getCurrentDate(){
                 return Math.floor(Date.now() / 1000);
+            },
+            checkLastID(){
+                return this.$store.getters.getLastID;
+            },
+            setSelectColor(statusId){
+                switch (statusId) {
+                    case 1:
+                        this.fieldColorModier = '-green';
+                        break;
+                    case 2:
+                        this.fieldColorModier = '-orange';
+                        break;
+                    case 3:
+                        this.fieldColorModier = '-blue';
+                        break;
+                }
+            },
+            checkComplite(type){
+                this.fieldErrors.name = !this.currentItem.name;
+                this.fieldErrors.status = !this.currentItem.status;
+
+                if (this.fieldErrors.name || this.fieldErrors.status) return false;
+
+                switch (type) {
+                    case 'add':
+                         this.createTask();
+                        break;
+                    case 'edit':
+                        this.editTask();
+                        break;
+                }
+            },
+            deleteTask(){
+                this.$store.dispatch('deleteTask', this.currentItem);
+                this.$router.push('/');
+            },
+            createTask(){
+                this.$store.dispatch('updateLastID', this.currentItem.id);
+                this.$store.dispatch('addTask', this.currentItem);
+                this.$router.push('/');
+            },
+            editTask(){
+                this.$store.dispatch('editTask', this.currentItem);
+                this.$router.push('/');
             }
         },
         beforeMount() {
@@ -72,11 +145,12 @@
         max-width: 600px;
         margin: 0 auto;
         & > .field{
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
     }
 
     .task-field{
+        position: relative;
         display: flex;
         flex-wrap: wrap;
         align-items: center;
@@ -104,8 +178,28 @@
             outline: none;
             box-shadow: 0 -1px 3px rgba(0,0,0, .8);
             &[disabled] {
-                background: rgba(0,0,0, .2);
+                background: rgba(0,0,0, .1);
             }
+            &.-green{
+                background-color: rgba(143, 188, 143, .3);
+            }
+            &.-orange{
+                background-color: rgba(255, 165, 0, .3);
+            }
+            &.-blue{
+                background-color: rgba(135, 206, 250, 0.3);
+            }
+            &.-red{
+                background-color: rgba(255, 0, 0, 0.3);
+            }
+        }
+
+        & > .error {
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 0;
+            color: red;
+            font-size: 12px;
         }
 
         &.-textarea{

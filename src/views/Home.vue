@@ -1,9 +1,9 @@
 <template lang="pug">
 .main-container
     template(v-if="taskList.length")
-        .tasks-list(v-for="task in taskList")
-            .item
-                TaskItem(:item="task")
+        .tasks-list
+            .item(v-for="task in taskList")
+                TaskItem(:item="task"  @trigger-refresh="checkTasksList")
 
     .tasks-menu
         .task-actions
@@ -24,6 +24,14 @@
                 taskList: [],
             };
         },
+        methods: {
+            checkTasksList(){
+                this.taskList = this.$store.getters.getTasks;
+            }
+        },
+        beforeMount() {
+            this.checkTasksList();
+        }
     };
 </script>
 
