@@ -1,4 +1,4 @@
-# test-tasks-list.loc
+# Используется vue 3 и vue-cli с дефолтными настройками
 
 ## Project setup
 ```
