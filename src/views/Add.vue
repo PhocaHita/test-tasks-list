@@ -1,6 +1,6 @@
 <template lang="pug">
 .main-container
-    TaskItemForm(:item="''" :isAdd="true")
+    TaskItemForm(:item="{}" :isAdd="true")
 </template>
 
 <script>

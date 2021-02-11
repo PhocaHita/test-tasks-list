@@ -7,6 +7,11 @@ export default createStore({
         tasks: [],
     },
     mutations: {
+        SET_OLD_DATA(state, data) {
+            state.lastID = data.lastID;
+            state.changingTask = data.changingTask;
+            state.tasks = data.tasks;
+        },
         UPDATE_LAST_ID(state, id) {
             state.lastID = id;
         },
@@ -32,24 +37,38 @@ export default createStore({
         },
     },
     actions: {
-        updateLastID({commit}, id) {
-            commit('UPDATE_LAST_ID', id);
+        updateStorage({state}){
+            let storageData = JSON.stringify(state);
+            localStorage.setItem('state', storageData);
         },
 
-        setChangingTask({commit, getters}, id) {
+        setOldData({commit}, data){
+            commit('SET_OLD_DATA', data);
+        },
+
+        async updateLastID({commit, dispatch}, id) {
+            await commit('UPDATE_LAST_ID', id);
+            dispatch('updateStorage');
+        },
+
+        async setChangingTask({commit, getters, dispatch}, id) {
             let tasksArr = [... getters.getTasks],
                 task;
+
             task = tasksArr.filter(el => {
                 return el.id === id;
             });
-            commit('SET_CHANGING_TASK', task[0]);
+
+            await commit('SET_CHANGING_TASK', task[0]);
+            dispatch('updateStorage');
         },
 
-        addTask({commit}, task) {
-            commit('ADD_TASK', task);
+        async addTask({commit, dispatch}, task) {
+            await commit('ADD_TASK', task);
+            dispatch('updateStorage');
         },
 
-        editTask({commit, getters}, task) {
+        async editTask({commit, getters, dispatch}, task) {
             let tasksArr = [... getters.getTasks];
 
             tasksArr = [...tasksArr.map(el => {
@@ -60,10 +79,11 @@ export default createStore({
                 }
             })];
 
-            commit('CHANGE_TASKS', tasksArr);
+            await commit('CHANGE_TASKS', tasksArr);
+            dispatch('updateStorage');
         },
 
-        deleteTask({commit, getters}, task) {
+        async deleteTask({commit, getters, dispatch}, task,) {
             let tasksArr = [... getters.getTasks];
 
             tasksArr = [...tasksArr.filter(el => {
@@ -72,7 +92,8 @@ export default createStore({
                 }
             })];
 
-            commit('CHANGE_TASKS', tasksArr);
+            await commit('CHANGE_TASKS', tasksArr);
+            dispatch('updateStorage');
         },
     },
 });

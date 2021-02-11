@@ -106,6 +106,7 @@
     & > .value{
         font-weight: bold;
         padding-left: 5px;
+        word-break: break-word;
     }
 }
 

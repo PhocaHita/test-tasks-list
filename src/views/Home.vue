@@ -15,7 +15,7 @@
     import TaskItem from '/src/components/TaskItem.vue';
 
     export default {
-        name: 'App',
+        name: 'Home',
         components: {
             TaskItem,
         },
@@ -49,7 +49,8 @@
         margin: 0 -10px -20px;
 
         & > .item {
-            flex-basis: 25%;
+            flex-basis: 31.6%;
+            max-width: 31.6%;
             width: 100%;
             padding: 0 10px;
             margin-bottom: 20px;
