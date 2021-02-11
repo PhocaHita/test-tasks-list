@@ -65,7 +65,7 @@
             },
             triggerChange(){
                 this.$store.dispatch('setChangingTask', this.item.id);
-                this.$router.push('/edit');
+                this.$router.push({path: `/task/${this.item.id}`});
             },
             deleteTask(){
                 this.$store.dispatch('deleteTask', this.item);
